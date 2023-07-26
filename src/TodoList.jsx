@@ -13,7 +13,7 @@ const TodoList = () => {
         setTodos(updatedTodos);
         setEditIndex(null);
       } else {
-        setTodos([...todos, todoText]);
+        setTodos([...todos, { text: todoText, completed: false }]);
       }
       setTodoText('');
     }
@@ -25,38 +25,57 @@ const TodoList = () => {
   };
 
   const handleEditTodo = (index) => {
-    setTodoText(todos[index]);
+    setTodoText(todos[index].text);
     setEditIndex(index);
+  };
+
+  const handleCompleteTodo = (index) => {
+    const updatedTodos = [...todos];
+    updatedTodos[index].completed = !updatedTodos[index].completed;
+    setTodos(updatedTodos);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleAddTodo();
+    }
   };
 
   return (
     <div className="todo-list">
+      { editIndex !== null ? '' :
       <div>
         <input
           type="text"
           value={todoText}
           onChange={(e) => setTodoText(e.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder="Add Todo..."
         />
-        <button onClick={handleAddTodo}>{editIndex !== null ? 'Update' : 'Add'}</button>
+        <button onClick={handleAddTodo}>Add</button>
       </div>
+      }
       <ul>
         {todos.map((todo, index) => (
-          <li key={index}>
+          <li key={index} className={todo.completed ? 'completed' : ''}>
             {editIndex === index ? (
               <>
                 <input
                   type="text"
                   value={todoText}
                   onChange={(e) => setTodoText(e.target.value)}
+                  onKeyPress={handleKeyPress}
                 />
                 <button onClick={() => handleAddTodo()}>Save</button>
               </>
             ) : (
               <>
-                {todo}
+                {todo.text}
                 <button onClick={() => handleEditTodo(index)}>Edit</button>
                 <button onClick={() => handleDeleteTodo(index)}>Delete</button>
+                <button onClick={() => handleCompleteTodo(index)}>
+                  {todo.completed ? 'Uncomplete' : 'Complete'}
+                </button>
               </>
             )}
           </li>
