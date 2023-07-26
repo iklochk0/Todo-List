@@ -52,9 +52,11 @@ const TodoList = () => {
 
   const filteredTodos = showCompleted ? todos.filter((todo) => todo.completed) : todos;
 
+  const year = new Date().getFullYear();
+
   return (
     <>
-      <span style={{position:'absolute', top: 0}}>Для того щоб поставити статус виконанно, просто натисніть на заголовок завдання</span>
+      <span style={{position:'absolute', bottom: 10 + 'px', fontSize: 12 + 'px'}}>Для того щоб поставити статус виконанно, просто натисніть на заголовок завдання. ToDo List&copy; {year}</span>
       <div className="todo-list">
         <div>
           <input
