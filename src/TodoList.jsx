@@ -4,12 +4,13 @@ const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [todoText, setTodoText] = useState('');
   const [editIndex, setEditIndex] = useState(null);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const handleAddTodo = () => {
     if (todoText.trim() !== '') {
       if (editIndex !== null) {
         const updatedTodos = [...todos];
-        updatedTodos[editIndex] = todoText;
+        updatedTodos[editIndex] = { text: todoText, completed: false };
         setTodos(updatedTodos);
         setEditIndex(null);
       } else {
@@ -29,10 +30,18 @@ const TodoList = () => {
     setEditIndex(index);
   };
 
-  const handleCompleteTodo = (index) => {
+  const handleToggleComplete = (index) => {
     const updatedTodos = [...todos];
     updatedTodos[index].completed = !updatedTodos[index].completed;
     setTodos(updatedTodos);
+  };
+
+  const handleShowAll = () => {
+    setShowCompleted(false);
+  };
+
+  const handleShowCompleted = () => {
+    setShowCompleted(true);
   };
 
   const handleKeyPress = (e) => {
@@ -41,47 +50,42 @@ const TodoList = () => {
     }
   };
 
+  const filteredTodos = showCompleted ? todos.filter((todo) => todo.completed) : todos;
+
   return (
-    <div className="todo-list">
-      { editIndex !== null ? '' :
-      <div>
-        <input
-          type="text"
-          value={todoText}
-          onChange={(e) => setTodoText(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Add Todo..."
-        />
-        <button onClick={handleAddTodo}>Add</button>
+    <>
+      <span style={{position:'absolute', top: 0}}>Для того щоб поставити статус виконанно, просто натисніть на заголовок завдання</span>
+      <div className="todo-list">
+        <div>
+          <input
+            type="text"
+            value={todoText}
+            onChange={(e) => setTodoText(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Add Todo..."
+          />
+          <button onClick={handleAddTodo}>{editIndex !== null ? 'Update' : 'Add'}</button>
+        </div>
+        <div>
+          <button onClick={handleShowAll}>Show All</button>
+          <button onClick={handleShowCompleted}>Show Completed</button>
+        </div>
+        <ul>
+          {filteredTodos.map((todo, index) => (
+            <li key={index} className={todo.completed ? 'completed' : ''}>
+              <span onClick={() => handleToggleComplete(index)}>{todo.text}</span>
+              {todo.completed && <span className="completed-text">Completed</span>}
+              {!todo.completed && (
+                <>
+                  <button onClick={() => handleEditTodo(index)}>Edit</button>
+                  <button onClick={() => handleDeleteTodo(index)}>Delete</button>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
-      }
-      <ul>
-        {todos.map((todo, index) => (
-          <li key={index} className={todo.completed ? 'completed' : ''}>
-            {editIndex === index ? (
-              <>
-                <input
-                  type="text"
-                  value={todoText}
-                  onChange={(e) => setTodoText(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-                <button onClick={() => handleAddTodo()}>Save</button>
-              </>
-            ) : (
-              <>
-                {todo.text}
-                <button onClick={() => handleEditTodo(index)}>Edit</button>
-                <button onClick={() => handleDeleteTodo(index)}>Delete</button>
-                <button onClick={() => handleCompleteTodo(index)}>
-                  {todo.completed ? 'Uncomplete' : 'Complete'}
-                </button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+    </>
   );
 };
 

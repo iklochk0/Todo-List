@@ -52,3 +52,9 @@ li button {
   background-color: #f44336;
   margin-left: 10px;
 }
+
+.completed-text {
+  color: green;
+  font-weight: bold;
+  margin-left: 10px;
+}
